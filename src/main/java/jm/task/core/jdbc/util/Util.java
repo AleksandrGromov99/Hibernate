@@ -20,6 +20,7 @@ public class Util {
     public static Connection getConnection() {
         Connection connection = null;
         try {
+            DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
             connection = DriverManager.getConnection(url, user, password);
             System.out.println("Connection established");
         } catch (SQLException e) {
