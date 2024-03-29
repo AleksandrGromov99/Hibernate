@@ -29,25 +29,23 @@ public class Util {
         return connection;
     }
 
-
     public static SessionFactory getSessionFactory() {
         if (sessionFactory == null) {
             try {
                 Configuration configuration = new Configuration();
-
+                DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
                 // Hibernate settings equivalent to hibernate.cfg.xml's properties
                 Properties settings = new Properties();
                 settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
-                settings.put(Environment.URL, "jdbc:mysql://localhost:3306/hibernate_db?useSSL=false");
-                settings.put(Environment.USER, "root");
-                settings.put(Environment.PASS, "root");
+                settings.put(Environment.URL, url);
+                settings.put(Environment.USER, user);
+                settings.put(Environment.PASS, password);
                 settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
-
                 settings.put(Environment.SHOW_SQL, "true");
 
                 settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
 
-                settings.put(Environment.HBM2DDL_AUTO, "create-drop");
+                settings.put(Environment.HBM2DDL_AUTO, "");
 
                 configuration.setProperties(settings);
 
@@ -62,6 +60,12 @@ public class Util {
             }
         }
         return sessionFactory;
+    }
+
+    public static void closeSessionFactory() {
+        if (Util.getSessionFactory() != null) {
+        Util.sessionFactory.close();
+        }
     }
 }
 
