@@ -14,17 +14,14 @@ public class UserDaoHibernateImpl implements UserDao {
 
 
     public UserDaoHibernateImpl() {
-
     }
 
     @Override
     public void createUsersTable() {
-
     }
 
     @Override
     public void dropUsersTable() {
-
     }
 
     @Override
@@ -47,22 +44,15 @@ public class UserDaoHibernateImpl implements UserDao {
     public void removeUserById(long id) {
         Transaction transaction = null;
         try (Session session = Util.getSessionFactory().openSession()) {
-            // Начинаем транзакцию
             transaction = session.beginTransaction();
-
-            // Получаем пользователя по идентификатору
             User user = session.get(User.class, id);
-
-            // Если пользователь найден, удаляем его
             if (user != null) {
                 session.delete(user);
             }
-
-            // Фиксируем транзакцию
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
-                transaction.rollback(); // Откатываем транзакцию в случае ошибки
+                transaction.rollback(); 
             }
             e.printStackTrace();
         }
