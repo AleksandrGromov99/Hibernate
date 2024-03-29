@@ -64,39 +64,7 @@ public class Util {
 
     public static void closeSessionFactory() {
         if (Util.getSessionFactory() != null) {
-        Util.sessionFactory.close();
+            Util.sessionFactory.close();
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//    private static final SessionFactory sessionFactory;
-//    static {
-//        try {
-//            sessionFactory = new Configuration().configure().buildSessionFactory();
-//        } catch (Throwable ex) {
-//            System.err.println("Initial SessionFactory creation failed." + ex);
-//            throw new ExceptionInInitializerError(ex);
-//        }
-//    }
-//
-//    public static SessionFactory getSessionFactory() {
-//        return sessionFactory;
-//    }
-
-//
-//    statement= connection.createStatement();
