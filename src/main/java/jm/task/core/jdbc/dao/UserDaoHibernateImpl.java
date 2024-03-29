@@ -9,12 +9,13 @@ import org.hibernate.cfg.Configuration;
 
 import java.util.List;
 
+
 public class UserDaoHibernateImpl implements UserDao {
+
 
     public UserDaoHibernateImpl() {
 
     }
-
 
     @Override
     public void createUsersTable() {
@@ -29,13 +30,10 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void saveUser(String name, String lastName, byte age) {
         Transaction transaction = null;
-        User user = new User(name,lastName,age);
+        User user = new User(name, lastName, age);
         try (Session session = Util.getSessionFactory().openSession()) {
-            // start a transaction
             transaction = session.beginTransaction();
-            // save the student object
             session.save(user);
-            // commit transaction
             transaction.commit();
         } catch (Exception e) {
             if (transaction != null) {
@@ -48,7 +46,7 @@ public class UserDaoHibernateImpl implements UserDao {
     @Override
     public void removeUserById(long id) {
         Transaction transaction = null;
-        try (Session session = Util.getSessionFactory().openSession()){
+        try (Session session = Util.getSessionFactory().openSession()) {
             // Начинаем транзакцию
             transaction = session.beginTransaction();
 
@@ -68,15 +66,39 @@ public class UserDaoHibernateImpl implements UserDao {
             }
             e.printStackTrace();
         }
-        }
-
-    @Override
-    public List<User> getAllUsers() {
-        return null;
     }
 
     @Override
-    public void cleanUsersTable() {
+    public List<User> getAllUsers() {
+        Transaction transaction = null;
+        List<User> users = null;
+        try (Session session = Util.getSessionFactory().openSession()) {
+            users = session.createQuery("from User", User.class).list();
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        } finally {
+            Util.getSessionFactory().close();
+        }
+        return users;
+    }
 
+
+    @Override
+    public void cleanUsersTable() {
+        Transaction transaction = null;
+        try (Session session = Util.getSessionFactory().openSession()) {
+            session.beginTransaction();
+            session.createQuery("delete User").executeUpdate();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            e.printStackTrace();
+        }
     }
 }
