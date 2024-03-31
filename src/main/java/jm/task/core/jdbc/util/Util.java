@@ -1,74 +1,69 @@
-package jm.task.core.jdbc.model;
+package jm.task.core.jdbc.util;
 
-import javax.persistence.*;
+import java.sql.*;
+import java.util.Properties;
 
-@Entity
-@Table(name = "users")
-public class User {
+import jm.task.core.jdbc.model.User;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Environment;
+import org.hibernate.service.ServiceRegistry;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+public class Util {
+    private static final String url = "jdbc:mysql://localhost:3306/mydb";
+    private static final String user = "root";
+    private static final String password = "root";
 
-    @Column(name = "name")
-    private String name;
+    private static SessionFactory sessionFactory;
 
-    @Column(name = "lastname")
-    private String lastName;
-
-    @Column(name = "age")
-    private Byte age;
-
-
-    public User(String name, String lastName, Byte age) {
-        this.name = name;
-        this.lastName = lastName;
-        this.age = age;
+    public static Connection getConnection() {
+        Connection connection = null;
+        try {
+            DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+            connection = DriverManager.getConnection(url, user, password);
+            System.out.println("Connection established");
+        } catch (SQLException e) {
+            throw new RuntimeException("Connection not established");
+        }
+        return connection;
     }
 
-    public User() {
+    public static SessionFactory getSessionFactory() {
+        if (sessionFactory == null) {
+            try {
+                Configuration configuration = new Configuration();
+                DriverManager.registerDriver(new com.mysql.cj.jdbc.Driver());
+                Properties settings = new Properties();
+                settings.put(Environment.DRIVER, "com.mysql.cj.jdbc.Driver");
+                settings.put(Environment.URL, url);
+                settings.put(Environment.USER, user);
+                settings.put(Environment.PASS, password);
+                settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
+                settings.put(Environment.SHOW_SQL, "true");
+
+                settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+
+                settings.put(Environment.HBM2DDL_AUTO, "");
+
+                configuration.setProperties(settings);
+
+                configuration.addAnnotatedClass(User.class);
+
+                ServiceRegistry serviceRegistry = new StandardServiceRegistryBuilder()
+                        .applySettings(configuration.getProperties()).build();
+
+                sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return sessionFactory;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Byte getAge() {
-        return age;
-    }
-
-    public void setAge(Byte age) {
-        this.age = age;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", age=" + age +
-                '}';
+    public static void closeSessionFactory() {
+        if (Util.sessionFactory != null) {
+            Util.sessionFactory.close();
+        }
     }
 }
