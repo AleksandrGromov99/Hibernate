@@ -8,7 +8,7 @@ public class Main {
         UserServiceImpl userService = new UserServiceImpl();
         userService.createUsersTable();
         userService.saveUser("Alex", "Petrakov", (byte) 23);
-        userService.saveUser("Ka","Petrakov", (byte) 23);
+        userService.saveUser("Ka","Peov", (byte) 23);
         userService.saveUser("Dima","Petrakov", (byte) 23);
         userService.saveUser("Sasha","Petrakov", (byte) 23);
         System.out.println(userService.getAllUsers());
